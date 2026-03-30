@@ -32,7 +32,7 @@ const Reservas = () => {
   const handleApprove = async (id) => {
     try {
       await reservaService.aprovar(id);
-      setReservas(reservas.map((r) => (r.id === id ? { ...r, status: 'aprovada' } : r)));
+      setReservas(reservas.map((r) => (r.id === id ? { ...r, status: 'APROVADA' } : r)));
     } catch (err) {
       setError('Falha ao aprovar reserva');
     }
@@ -41,7 +41,7 @@ const Reservas = () => {
   const handleReject = async (id) => {
     try {
       await reservaService.rejeitar(id, 'Rejeitada pelo síndico');
-      setReservas(reservas.map((r) => (r.id === id ? { ...r, status: 'rejeitada' } : r)));
+      setReservas(reservas.map((r) => (r.id === id ? { ...r, status: 'REJEITADA' } : r)));
     } catch (err) {
       setError('Falha ao rejeitar reserva');
     }

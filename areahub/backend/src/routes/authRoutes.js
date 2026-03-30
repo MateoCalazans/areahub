@@ -1,23 +1,18 @@
-/**
- * Rotas de Autenticação
- * Responsável pelos endpoints de login, register, refresh e logout
- */
-
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
-// POST /auth/login - Realizar login
+// POST /api/auth/login - Login (publico)
 router.post('/login', authController.login);
 
-// POST /auth/register - Realizar cadastro
-router.post('/register', authController.register);
+// POST /api/auth/primeiro-acesso - Forcar troca de senha no primeiro acesso
+router.post('/primeiro-acesso', authMiddleware, authController.primeiroAcesso);
 
-// POST /auth/refresh - Renovar token JWT
-router.post('/refresh', authMiddleware, authController.refreshToken);
+// POST /api/auth/redefinir-senha - Trocar senha de usuario autenticado
+router.post('/redefinir-senha', authMiddleware, authController.redefinirSenha);
 
-// POST /auth/logout - Realizar logout
+// POST /api/auth/logout - Logout (autenticado)
 router.post('/logout', authMiddleware, authController.logout);
 
 module.exports = router;

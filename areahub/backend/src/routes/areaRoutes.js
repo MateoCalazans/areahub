@@ -1,27 +1,25 @@
-/**
- * Rotas de Áreas Comuns
- * Responsável pelos endpoints de CRUD de áreas
- */
-
 const express = require('express');
 const router = express.Router();
 const areaController = require('../controllers/areaController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// GET /areas - Listar todas as áreas
+// GET /api/areas - Listar todas (autenticado)
 router.get('/', authMiddleware, areaController.listar);
 
-// GET /areas/:id - Buscar área por ID
+// GET /api/areas/:id - Buscar por ID (autenticado)
 router.get('/:id', authMiddleware, areaController.buscarPorId);
 
-// POST /areas - Criar nova área (apenas admin/síndico)
-router.post('/', authMiddleware, roleMiddleware(['admin', 'sindico']), areaController.criar);
+// GET /api/areas/:id/disponibilidade - Verificar disponibilidade (autenticado)
+router.get('/:id/disponibilidade', authMiddleware, areaController.verificarDisponibilidade);
 
-// PATCH /areas/:id - Atualizar área (apenas admin/síndico)
-router.patch('/:id', authMiddleware, roleMiddleware(['admin', 'sindico']), areaController.atualizar);
+// POST /api/areas - Criar area (SINDICO/ADMINISTRADOR)
+router.post('/', authMiddleware, roleMiddleware(['SINDICO', 'ADMINISTRADOR']), areaController.criar);
 
-// DELETE /areas/:id - Deletar área (apenas admin/síndico)
-router.delete('/:id', authMiddleware, roleMiddleware(['admin', 'sindico']), areaController.deletar);
+// PUT /api/areas/:id - Atualizar area (SINDICO/ADMINISTRADOR)
+router.put('/:id', authMiddleware, roleMiddleware(['SINDICO', 'ADMINISTRADOR']), areaController.atualizar);
+
+// DELETE /api/areas/:id - Deletar area (SINDICO/ADMINISTRADOR)
+router.delete('/:id', authMiddleware, roleMiddleware(['SINDICO', 'ADMINISTRADOR']), areaController.deletar);
 
 module.exports = router;

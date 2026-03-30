@@ -1,31 +1,41 @@
-/**
- * Componente Sidebar
- * Responsável pela navegação lateral da aplicação
- */
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
-import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+const allLinks = [
+  { to: '/dashboard', label: 'Dashboard' },
+  { to: '/areas', label: 'Áreas' },
+  { to: '/reservas', label: 'Reservas', roles: ['ADMINISTRADOR', 'SINDICO'] },
+  { to: '/minhas-reservas', label: 'Minhas Reservas' },
+  { to: '/usuarios', label: 'Usuários', roles: ['ADMINISTRADOR'] },
+];
 
-const Sidebar = () => {
-  const { user } = useContext(AuthContext);
-  const isAdmin = user?.role === 'admin' || user?.role === 'sindico';
+export default function Sidebar() {
+  const { user } = useAuth();
+
+  const links = allLinks.filter((link) => {
+    if (!link.roles) return true;
+    return link.roles.includes(user?.role);
+  });
 
   return (
-    <aside style={{ width: '200px', padding: '1rem', backgroundColor: '#f0f0f0', minHeight: '100vh' }}>
-      <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/areas">Áreas</Link>
-        <Link to="/minhas-reservas">Minhas Reservas</Link>
-        {isAdmin && (
-          <>
-            <Link to="/reservas">Todas as Reservas</Link>
-            <Link to="/usuarios">Gerenciar Usuários</Link>
-          </>
-        )}
+    <aside className="min-h-screen w-64 border-r border-slate-200 bg-slate-50 px-4 py-6">
+      <nav className="space-y-2">
+        {links.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            className={({ isActive }) =>
+              `block rounded-lg px-4 py-3 text-sm font-medium transition ${
+                isActive
+                  ? 'bg-primary text-white'
+                  : 'text-slate-700 hover:bg-slate-100'
+              }`
+            }
+          >
+            {link.label}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );
-};
-
-export default Sidebar;
+}

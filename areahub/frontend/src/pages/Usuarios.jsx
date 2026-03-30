@@ -58,7 +58,7 @@ const Usuarios = () => {
           <tbody>
             {usuarios.map((usuario) => (
               <tr key={usuario.id}>
-                <td style={{ padding: '0.5rem', border: '1px solid #ddd' }}>{usuario.name}</td>
+                <td style={{ padding: '0.5rem', border: '1px solid #ddd' }}>{usuario.nome}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #ddd' }}>{usuario.email}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #ddd' }}>{usuario.role}</td>
                 <td style={{ padding: '0.5rem', border: '1px solid #ddd' }}>

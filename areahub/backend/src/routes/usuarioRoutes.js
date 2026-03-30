@@ -1,27 +1,25 @@
-/**
- * Rotas de Usuários
- * Responsável pelos endpoints de CRUD de usuários
- */
-
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const roleMiddleware = require('../middlewares/roleMiddleware');
 
-// GET /usuarios - Listar todos os usuários
-router.get('/', authMiddleware, roleMiddleware(['admin', 'sindico']), usuarioController.listar);
+// GET /api/usuarios - Listar todos (ADMINISTRADOR)
+router.get('/', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.listar);
 
-// GET /usuarios/:id - Buscar usuário por ID
-router.get('/:id', authMiddleware, usuarioController.buscarPorId);
+// GET /api/usuarios/:id - Buscar por ID (ADMINISTRADOR)
+router.get('/:id', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.buscarPorId);
 
-// POST /usuarios - Criar novo usuário
-router.post('/', authMiddleware, roleMiddleware(['admin']), usuarioController.criar);
+// POST /api/usuarios - Criar usuario (ADMINISTRADOR)
+router.post('/', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.criar);
 
-// PATCH /usuarios/:id - Atualizar usuário
-router.patch('/:id', authMiddleware, usuarioController.atualizar);
+// PUT /api/usuarios/:id - Atualizar usuario (ADMINISTRADOR)
+router.put('/:id', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.atualizar);
 
-// DELETE /usuarios/:id - Deletar usuário
-router.delete('/:id', authMiddleware, roleMiddleware(['admin']), usuarioController.deletar);
+// PATCH /api/usuarios/:id/status - Ativar/desativar usuario (ADMINISTRADOR)
+router.patch('/:id/status', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.alterarStatus);
+
+// DELETE /api/usuarios/:id - Deletar usuario (ADMINISTRADOR)
+router.delete('/:id', authMiddleware, roleMiddleware(['ADMINISTRADOR']), usuarioController.deletar);
 
 module.exports = router;

@@ -1,24 +1,35 @@
-/**
- * Componente ProtectedRoute
- * Responsável por proteger rotas que requerem autenticação e controle de roles
- */
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import LoadingSpinner from './LoadingSpinner';
 
-import { useContext } from 'react';
-import { Navigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+export default function ProtectedRoute({ children, allowedRoles, roles }) {
+  const { isAuthenticated, user, loading } = useAuth();
+  const location = useLocation();
+  const requiredRoles = allowedRoles || roles;
 
-const ProtectedRoute = ({ children, roles = [] }) => {
-  const { isAuthenticated, user } = useContext(AuthContext);
+  if (loading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-surface">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(user?.role)) {
+  if (user?.primeiroAcesso && location.pathname !== '/primeiro-acesso') {
+    return <Navigate to="/primeiro-acesso" replace />;
+  }
+
+  if (location.pathname === '/primeiro-acesso' && user?.primeiroAcesso === false) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  if (requiredRoles && requiredRoles.length > 0 && !requiredRoles.includes(user?.role)) {
     return <Navigate to="/dashboard" replace />;
   }
 
   return children;
-};
-
-export default ProtectedRoute;
+}

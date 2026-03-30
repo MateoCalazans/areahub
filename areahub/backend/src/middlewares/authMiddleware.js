@@ -1,23 +1,26 @@
-/**
- * Middleware de Autenticação JWT
- * Responsável por verificar e validar tokens JWT nas requisições
- */
-
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const authHeader = req.headers.authorization;
 
-    if (!token) {
-      return res.status(401).json({ error: 'Token não fornecido' });
+    if (!authHeader) {
+      return res.status(401).json({ erro: 'Token de autenticacao nao fornecido' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'seu_secret');
+    const parts = authHeader.split(' ');
+
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+      return res.status(401).json({ erro: 'Formato de token invalido' });
+    }
+
+    const token = parts[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Token inválido ou expirado' });
+    return res.status(401).json({ erro: 'Token invalido ou expirado' });
   }
 };
 

@@ -1,39 +1,41 @@
-/**
- * Express App Principal
- * Responsável pela configuração da aplicação Express com middlewares e rotas
- */
-
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 
-const app = express();
-
-// Middlewares globais
-app.use(cors());
-app.use(express.json());
-
-// Importar rotas
 const authRoutes = require('./routes/authRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const areaRoutes = require('./routes/areaRoutes');
 const reservaRoutes = require('./routes/reservaRoutes');
+const condominoRoutes = require('./routes/condominoRoutes');
+const perfilRoutes = require('./routes/perfilRoutes');
 
-// Registrar rotas
+const app = express();
+
+// Middlewares globais
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}));
+app.use(express.json());
+
+// Rotas
 app.use('/api/auth', authRoutes);
+app.use('/api/perfil', perfilRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/areas', areaRoutes);
 app.use('/api/reservas', reservaRoutes);
+app.use('/api/condominos', condominoRoutes);
 
-// Rota de health check
+// Health check
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({ status: 'ok', mensagem: 'Servidor AreaHub funcionando' });
 });
 
-// Middleware de erro global (simples)
+// Middleware de erro global
 app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(err.status || 500).json({ error: err.message || 'Erro interno do servidor' });
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    erro: err.message || 'Erro interno do servidor',
+  });
 });
 
 module.exports = app;

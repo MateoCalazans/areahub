@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMINISTRADOR
+  SINDICO
+  CONDOMINO
+}
+
+enum StatusReserva {
+  PENDENTE
+  APROVADA
+  CANCELADA
+  REJEITADA
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  status    Boolean  @default(true)
+  role      Role     @default(CONDOMINO)
+  primeiroAcesso Boolean @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  condomino Condomino?
+
+  @@map("usuarios")
+}
+
+model Condomino {
+  id        Int    @id @default(autoincrement()) @map("id_condomino")
+  unidade   String
+  usuarioId Int    @unique @map("usuario_id")
+
+  usuario  Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  reservas Reserva[]
+
+  @@map("condominos")
+}
+
+model Area {
+  id                Int      @id @default(autoincrement()) @map("id_area")
+  nome              String
+  descricao         String?
+  capacidade        Int
+  horarioAbertura   String   @map("horario_abertura")
+  horarioFechamento String   @map("horario_fechamento")
+  ativa             Boolean  @default(true)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  reservas Reserva[]
+
+  @@map("areas")
+}
+
+model Reserva {
+  id          Int           @id @default(autoincrement()) @map("id_reserva")
+  data        DateTime      @db.Date
+  horaInicio  String        @map("hora_inicio")
+  horaFim     String        @map("hora_fim")
+  status      StatusReserva @default(PENDENTE)
+  condominoId Int           @map("id_condomino")
+  areaId      Int           @map("id_area")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  condomino Condomino @relation(fields: [condominoId], references: [id], onDelete: Cascade)
+  area      Area      @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@map("reservas")
+}
